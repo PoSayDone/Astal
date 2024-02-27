@@ -92,9 +92,9 @@ export class Greetd extends Service {
         try {
             const json = JSON.stringify({ type: req, ...payload });
             const ostream = new Gio.DataOutputStream({
-                close_base_stream: true,
-                base_stream: connection.get_output_stream(),
-                byte_order: Gio.DataStreamByteOrder.HOST_ENDIAN,
+                closeBaseStream: true,
+                baseStream: connection.get_output_stream(),
+                byteOrder: Gio.DataStreamByteOrder.HOST_ENDIAN,
             });
 
             const istream = connection.get_input_stream();

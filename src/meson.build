@@ -20,7 +20,6 @@ configure_file(
     'PACKAGE_VERSION': meson.project_version(),
     'PREFIX': prefix,
     'LIBDIR': libdir,
-    'RESOURCE_PATH': '/com/github/Aylur/ags',
   },
   install: true,
   install_dir: pkgdatadir

@@ -1,10 +1,11 @@
-import Gtk from 'gi://Gtk?version=3.0';
+import Gdk from 'gi://Gdk?version=4.0';
+import Gtk from 'gi://Gtk?version=4.0';
 import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 
 export function loadInterfaceXML(iface: string) {
-    const uri = `resource:///com/github/Aylur/ags/dbus/${iface}.xml`;
+    const uri = `resource:///astal/dbus/${iface}.xml`;
     const f = Gio.File.new_for_uri(uri);
 
     try {
@@ -32,15 +33,13 @@ export function bulkDisconnect(service: GObject.Object, ids: number[]) {
         service.disconnect(id);
 }
 
-export function lookUpIcon(name?: string, size = 16) {
-    if (!name)
-        return null;
+export function lookUpIcon(name: string) {
+    const display = Gdk.Display.get_default();
+    if (!display)
+        return console.error("couldn't get display");
 
-    return Gtk.IconTheme.get_default().lookup_icon(
-        name,
-        size,
-        Gtk.IconLookupFlags.USE_BUILTIN,
-    );
+    return Gtk.IconTheme.get_for_display(display).has_icon(name)
+        ? name : null;
 }
 
 export function ensureDirectory(path: string) {

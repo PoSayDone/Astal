@@ -61,10 +61,10 @@ export class Stream extends Service {
         this.setStream(stream || null);
     }
 
-    get application_id() { return this._stream?.application_id || null; }
+    get application_id() { return this._stream?.applicationId || null; }
     get stream() { return this._stream || null; }
     get description() { return this._stream?.description || null; }
-    get icon_name() { return this._stream?.icon_name || null; }
+    get icon_name() { return this._stream?.iconName || null; }
     get id() { return this._stream?.id || null; }
     get name() { return this._stream?.name || null; }
     get state() {

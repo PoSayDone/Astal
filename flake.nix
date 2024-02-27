@@ -1,9 +1,7 @@
 {
-  description = "A customizable and extensible shell";
+  description = "JavaScript/TypeScript framework for creating Linux Desktops";
 
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  };
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
   outputs = {
     nixpkgs,
@@ -18,8 +16,8 @@
   in {
     packages = genSystems (system: rec {
       default = pkgs.${system}.callPackage ./nix {inherit version;};
-      ags = default;
-      agsWithTypes = pkgs.${system}.callPackage ./nix {
+      astal = default;
+      astalWithTypes = pkgs.${system}.callPackage ./nix {
         inherit version;
         buildTypes = true;
       };

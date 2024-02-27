@@ -147,13 +147,13 @@ export class MprisPlayer extends Service {
         this._binding.mpris = this._mprisProxy.connect(
             'notify::g-name-owner',
             () => {
-                if (!this._mprisProxy.g_name_owner)
+                if (!this._mprisProxy.gNameOwner)
                     this.close();
             });
 
         this._identity = this._mprisProxy.Identity;
         this._entry = this._mprisProxy.DesktopEntry;
-        if (!this._mprisProxy.g_name_owner)
+        if (!this._mprisProxy.gNameOwner)
             this.close();
     }
 
@@ -220,6 +220,7 @@ export class MprisPlayer extends Service {
             Gio.File.new_for_path(this._coverPath),
             Gio.FileCopyFlags.OVERWRITE,
             GLib.PRIORITY_DEFAULT,
+            // @ts-expect-error
             null, null, (source: Gio.File, result: Gio.AsyncResult) => {
                 try {
                     source.copy_finish(result);

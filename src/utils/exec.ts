@@ -1,4 +1,4 @@
-import Gtk from 'gi://Gtk?version=3.0';
+import Gtk from 'gi://Gtk?version=4.0';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
@@ -89,8 +89,8 @@ export function subprocess(
         }
 
         const stdout = new Gio.DataInputStream({
-            base_stream: pipe,
-            close_base_stream: true,
+            baseStream: pipe,
+            closeBaseStream: true,
         });
 
         read(stdout);

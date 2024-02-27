@@ -14,11 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
-      - name: Create ags tar file
+          submodules: "recursive"
+      - name: Create Astal tar file
         run: |
-            cd ..
-            tar -czf "ags-${{ github.ref_name }}.tar.gz" "ags"
+          cd ..
+          tar -czf "astal-${{ github.ref_name }}.tar.gz" "astal"
       - name: setup node
         uses: actions/setup-node@v3
         with:
@@ -31,5 +31,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ../ags-${{ github.ref_name }}.tar.gz
+            ../astal-${{ github.ref_name }}.tar.gz
             node_modules-${{ github.ref_name }}.tar.gz

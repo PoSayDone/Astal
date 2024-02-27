@@ -38,11 +38,11 @@ const Bar = (/** @type {number} */ monitor) => Widget.Window({
     anchor: ['top', 'left', 'right'],
     exclusivity: 'exclusive',
     child: Widget.CenterBox({
-        start_widget: Widget.Label({
+        startWidget: Widget.Label({
             hpack: 'center',
-            label: 'Welcome to AGS!',
+            label: 'Welcome to Astal!',
         }),
-        end_widget: Widget.Label({
+        endWidget: Widget.Label({
             hpack: 'center',
             label: time.bind(),
         }),
@@ -91,10 +91,10 @@ const nixPaths = [
     `${HOME}/.nix-profile`,
     `${HOME}/.local/state/nix/profiles/home-manager`,
     '/run/current-system/sw',
-].map(path => `${path}/share/${pkg.name}/types`);
+].map(path => `${path}/share/astal/types`);
 
 const nixWarning = `nix users!
-if ags was installed with nix there is no guarantee
+if Astal was installed with nix there is no guarantee
 that the types directory got symlinked correctly
 and there is no guarante the symlink won't break on updates
 if it was symlinked to /nix/store you need to run --init on updates`;
@@ -126,7 +126,7 @@ export async function init(configDir: string, entry: string) {
         }
     }
 
-    const linkStore = GLib.getenv('AGS_LINK_NIX_STORE');
+    const linkStore = GLib.getenv('ASTAL_LINK_NIX_STORE');
     const nixPath = linkStore ? '' : nixPaths.find(path => {
         if (GLib.file_test(path, GLib.FileTest.EXISTS))
             return true;

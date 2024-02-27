@@ -77,15 +77,6 @@ export function monitorFile(
     callback?: (file: Gio.File, event: Gio.FileMonitorEvent) => void,
     flags = Gio.FileMonitorFlags.NONE,
 ) {
-    // FIXME: remove the checking in the next release
-    // @ts-expect-error
-    if (flags === 'file' || flags === 'directory') {
-        throw Error(
-            `${flags}` + ' passed as a parameter in `monitorFile`. ' +
-            'Specifying the type is no longer required.',
-        );
-    }
-
     try {
         const file = Gio.File.new_for_path(path);
         const mon = file.monitor(flags, null);

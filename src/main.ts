@@ -17,7 +17,7 @@ const help = (bin: string) => `USAGE:
 OPTIONS:
     -h, --help              Print this help and exit
     -v, --version           Print version and exit
-    -q, --quit              Kill AGS
+    -q, --quit              Kill Astal
     -c, --config            Path to the config file. Default: ${DEFAULT_CONF}
     -b, --bus-name          Bus name of the process
     -i, --inspector         Open up the Gtk debug tool
@@ -37,9 +37,6 @@ export async function main(args: string[]) {
         toggleWindow: '',
         quit: false,
         init: false,
-
-        // FIXME: deprecated
-        runPromise: '',
     };
 
     for (let i = 1; i < args.length; ++i) {
@@ -98,13 +95,6 @@ export async function main(args: string[]) {
                 flags.runFile = parsePath(args[++i]);
                 break;
 
-            // FIXME: deprecated
-            case 'run-promise':
-            case '-p':
-            case '--run-promise':
-                flags.runPromise = args[++i];
-                break;
-
             case 'toggle-window':
             case '-t':
             case '--toggle-window':
@@ -146,10 +136,6 @@ export async function main(args: string[]) {
 
             if (flags.runFile)
                 app.RunFile(flags.runFile);
-
-            // FIXME: deprecated
-            if (flags.runPromise)
-                app.RunPromise(flags.runPromise);
 
             if (flags.inspector)
                 app.Inspector();

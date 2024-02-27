@@ -141,8 +141,8 @@ export class Hyprland extends Service {
         // this._syncClients();
 
         this._watchSocket(new Gio.DataInputStream({
-            close_base_stream: true,
-            base_stream: socket(`/tmp/hypr/${HIS}/.socket2.sock`)
+            closeBaseStream: true,
+            baseStream: socket(`/tmp/hypr/${HIS}/.socket2.sock`)
                 .get_input_stream(),
         }));
 
@@ -160,13 +160,6 @@ export class Hyprland extends Service {
         });
     }
 
-    // FIXME: deprecated
-    readonly sendMessage = (cmd: string) => {
-        console.warn('hyprland.sendMessage is DEPRECATED, '
-            + ' use hyprland.message or hyprland.messageAsync');
-        return this.messageAsync(cmd);
-    };
-
     private _socketStream(cmd: string) {
         const connection = socket(`/tmp/hypr/${HIS}/.socket.sock`);
 
@@ -175,8 +168,8 @@ export class Hyprland extends Service {
             .write(this._encoder.encode(cmd), null);
 
         const stream = new Gio.DataInputStream({
-            close_base_stream: true,
-            base_stream: connection.get_input_stream(),
+            closeBaseStream: true,
+            baseStream: connection.get_input_stream(),
         });
 
         return [connection, stream] as const;

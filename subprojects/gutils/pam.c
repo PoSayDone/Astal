@@ -58,7 +58,7 @@ void auth_thread (GTask         *task,
       .appdata_ptr = (void *) info->password,
     };
     int retval;
-    retval = pam_start("ags", info->username, &conv, &pamh);
+    retval = pam_start("astal", info->username, &conv, &pamh);
     if (retval == PAM_SUCCESS) {
         retval = pam_authenticate(pamh, 0);
         pam_end(pamh, retval);

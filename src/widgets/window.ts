@@ -1,10 +1,9 @@
 import { register, type BaseProps, type Widget } from './widget.js';
-import Gtk from 'gi://Gtk?version=3.0';
-import Gdk from 'gi://Gdk?version=3.0';
+import Gtk from 'gi://Gtk?version=4.0';
+import Gdk from 'gi://Gdk?version=4.0';
 import { Binding } from '../service.js';
-import App from '../app.js';
 // @ts-expect-error missing types FIXME:
-import { default as LayerShell } from 'gi://GtkLayerShell';
+import { default as LayerShell } from 'gi://Gtk4LayerShell';
 
 const ANCHOR = {
     'left': LayerShell.Edge.LEFT,
@@ -45,12 +44,11 @@ export type WindowProps<
     gdkmonitor?: Gdk.Monitor
     visible?: boolean
     keymode?: Keymode
-
-    // FIXME: deprecated
-    popup?: boolean
-    exclusive?: boolean
-    focusable?: boolean
 }, Attr>
+
+export function newWindow<Child extends Gtk.Widget, Attr>(props: WindowProps<Child, Attr>) {
+    return new Window(props);
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export interface Window<Child, Attr> extends Widget<Attr> { }
@@ -76,7 +74,6 @@ export class Window<Child extends Gtk.Widget, Attr> extends Gtk.Window {
     // so we can't rely on gobject constructor
     constructor({
         anchor = [],
-        exclusive,
         exclusivity = 'normal',
         focusable = false,
         keymode = 'none',
@@ -84,7 +81,6 @@ export class Window<Child extends Gtk.Widget, Attr> extends Gtk.Window {
         margins = [],
         monitor = -1,
         gdkmonitor,
-        popup = false,
         visible = true,
         ...params
     }: WindowProps<Child, Attr> = {}, child?: Child) {
@@ -95,9 +91,7 @@ export class Window<Child extends Gtk.Widget, Attr> extends Gtk.Window {
         LayerShell.init_for_window(this);
         LayerShell.set_namespace(this, this.name);
 
-
         this._handleParamProp('anchor', anchor);
-        this._handleParamProp('exclusive', exclusive);
         this._handleParamProp('exclusivity', exclusivity);
         this._handleParamProp('focusable', focusable);
         this._handleParamProp('layer', layer);
@@ -106,13 +100,8 @@ export class Window<Child extends Gtk.Widget, Attr> extends Gtk.Window {
         this._handleParamProp('gdkmonitor', gdkmonitor);
         this._handleParamProp('keymode', keymode);
 
-        this.show_all();
-        this._handleParamProp('popup', popup);
-
-        if (visible instanceof Binding)
-            this._handleParamProp('visible', visible);
-        else
-            this.visible = visible === true || visible === null && !popup;
+        this.present();
+        this._handleParamProp('visible', visible);
     }
 
     get child() { return super.child as Child; }
@@ -130,31 +119,14 @@ export class Window<Child extends Gtk.Widget, Attr> extends Gtk.Window {
         if (monitor < 0)
             return;
 
-        const m = Gdk.Display.get_default()?.get_monitor(monitor);
+        const m = Gdk.Display.get_default()?.get_monitors().get_item(monitor);
         if (m) {
-            this.gdkmonitor = m;
+            this.gdkmonitor = m as Gdk.Monitor;
             this._set('monitor', monitor);
             return;
         }
 
         console.error(`Could not find monitor with id: ${monitor}`);
-    }
-
-    // FIXME: deprecated
-    get exclusive() { return LayerShell.auto_exclusive_zone_is_enabled(this); }
-    set exclusive(exclusive: boolean) {
-        if (exclusive === undefined)
-            return;
-
-        console.warn('Window.exclusive is DEPRECATED, use Window.exclusivity');
-        if (this.exclusive === exclusive)
-            return;
-
-        exclusive
-            ? LayerShell.auto_exclusive_zone_enable(this)
-            : LayerShell.set_exclusive_zone(this, 0);
-
-        this.notify('exclusive');
     }
 
     get exclusivity(): Exclusivity {
@@ -266,59 +238,6 @@ export class Window<Child extends Gtk.Widget, Attr> extends Gtk.Window {
         );
 
         this.notify('margins');
-    }
-
-    // FIXME: deprecated
-    get popup() { return !!this._get('popup'); }
-    set popup(popup: boolean) {
-        if (this.popup === popup)
-            return;
-
-        console.warn('Window.popup is DEPRECATED. '
-            + 'the click away functionality depends on a bug which was patched in Hyprland '
-            + 'and it never worked on Sway anyway. '
-            + 'to close on the esc key '
-            + 'use self.keybind("Escape", () => App.closeWindow("window-name"))');
-
-        if (this.popup) {
-            const [esc, click] = this._get<[number, number]>('popup');
-            this.disconnect(esc);
-            this.disconnect(click);
-        }
-
-        if (popup) {
-            const esc = this.connect('key-press-event', (_, event: Gdk.Event) => {
-                if (event.get_keyval()[1] === Gdk.KEY_Escape) {
-                    App.getWindow(this.name!)
-                        ? App.closeWindow(this.name!)
-                        : this.hide();
-                }
-            });
-
-            const click = this.connect('button-release-event', () => {
-                const [x, y] = this.get_pointer();
-                if (x === 0 && y === 0)
-                    App.closeWindow(this.name!);
-            });
-
-            this._set('popup', [esc, click]);
-        }
-    }
-
-    // FIXME: deprecated
-    get focusable() {
-        return LayerShell.get_keyboard_mode(this) === LayerShell.KeyboardMode.ON_DEMAND;
-    }
-
-    set focusable(focusable: boolean) {
-        if (this.focusable === focusable)
-            return;
-
-        console.warn('Window.focusable is DEPRECATED, use Window.keymode');
-        LayerShell.set_keyboard_mode(
-            this, LayerShell.KeyboardMode[focusable ? 'ON_DEMAND' : 'NONE']);
-
-        this.notify('focusable');
     }
 
     get keymode() {

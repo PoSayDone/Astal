@@ -8,7 +8,7 @@ APP_ID=$4
 mkdir -p $BIN_DIR
 
 BIN_SRC="$PKGDATA_DIR/$APP_ID"
-BIN_DEST="$BIN_DIR/ags"
+BIN_DEST="$BIN_DIR/astal"
 ln -s -f $BIN_SRC $BIN_DEST
 
 if [[ "$5" == "false" ]]; then
@@ -31,7 +31,7 @@ export -f fixPaths
 find $TYPES -type f | xargs -I % bash -c "fixPaths %"
 cp -r "$SRC/node_modules/@girs" "$TYPES/@girs"
 
-# gen ags.d.ts
+# gen .d.ts
 function mod {
 	echo "declare module '$1' {
     const exports: typeof import('$2')
@@ -40,18 +40,12 @@ function mod {
 }
 
 function resource {
-	mod "resource:///com/github/Aylur/ags/$1.js" "./$1"
+	mod "resource:///astal/$1.js" "./$1"
 }
 
-dts="$TYPES/ags.d.ts"
+dts="$TYPES/astal.d.ts"
 
-echo "declare function print(...args: any[]): void;
-declare const Widget: typeof import('./widget').default
-declare const Service: typeof import('./service').default
-declare const Variable: typeof import('./variable').default
-declare const Utils: typeof import('./utils').default
-declare const App: typeof import('./app').default
-" >$dts
+echo "declare function print(...args: any[]): void;" >$dts
 
 for file in $SRC/src/*.ts; do
 	f=$(basename -s .ts $file)

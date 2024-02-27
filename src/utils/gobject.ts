@@ -1,4 +1,4 @@
-import Gtk from 'gi://Gtk?version=3.0';
+import Gtk from 'gi://Gtk?version=4.0';
 import GObject from 'gi://GObject';
 
 type Camel<S extends string> = S extends `${infer P1}_${infer P2}${infer P3}`
@@ -104,7 +104,7 @@ export function registerGObject<
     }
 
     return GObject.registerClass(Object.assign({
-        GTypeName: config?.typename || `Ags_${object.name}`,
+        GTypeName: config?.typename || `Astal_${object.name}`,
         Signals,
         Properties,
     }, config?.cssName ? { CssName: config.cssName } : {}), object);

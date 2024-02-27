@@ -8,18 +8,18 @@ self: {
   inherit (lib.modules) mkIf;
   inherit (lib.options) mkOption mkEnableOption literalExpression;
 
-  defaultAgsPackage = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
-  cfg = config.programs.ags;
+  defaultAstalPackage = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
+  cfg = config.programs.astal;
 in {
-  options.programs.ags = {
-    enable = mkEnableOption "ags";
+  options.programs.astal = {
+    enable = mkEnableOption "astal";
 
     package = mkOption {
       type = with types; nullOr package;
-      default = defaultAgsPackage;
-      defaultText = literalExpression "inputs.ags.packages.${pkgs.stdenv.hostPlatform.system}.default";
+      default = defaultAstalPackage;
+      defaultText = literalExpression "inputs.astal.packages.${pkgs.stdenv.hostPlatform.system}.default";
       description = ''
-        The Ags package to use.
+        The Astal package to use.
 
         By default, this option will use the `packages.default` as exposed by this flake.
       '';
@@ -30,16 +30,16 @@ in {
       readOnly = true;
       visible = false;
       description = ''
-        Resulting ags package.
+        Resulting Astal package.
       '';
     };
 
     configDir = mkOption {
       type = with types; nullOr path;
       default = null;
-      example = literalExpression "./ags-config";
+      example = literalExpression "./astal-config";
       description = ''
-        The directory to symlink to {file}`$XDG_CONFIG_HOME/ags`.
+        The directory to symlink to {file}`$XDG_CONFIG_HOME/astal`.
       '';
     };
 
@@ -49,22 +49,22 @@ in {
       description = ''
         Additional packages to add to gjs's runtime.
       '';
-      example = literalExpression "[ pkgs.libsoup_3 ]";
+      example = literalExpression "[ pkgs.libadwaita ]";
     };
   };
 
   config = mkIf cfg.enable (mkMerge [
     (mkIf (cfg.configDir != null) {
-      xdg.configFile."ags".source = cfg.configDir;
+      xdg.configFile."astal".source = cfg.configDir;
     })
     (mkIf (cfg.package != null) (let
-      path = "/share/com.github.Aylur.ags/types";
+      path = "share/astal/types";
       pkg = cfg.package.override {
         extraPackages = cfg.extraPackages;
         buildTypes = true;
       };
     in {
-      programs.ags.finalPackage = pkg;
+      programs.astal.finalPackage = pkg;
       home.packages = [pkg];
       home.file.".local/${path}".source = "${pkg}/${path}";
     }))

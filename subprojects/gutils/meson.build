@@ -35,6 +35,6 @@ gnome.generate_gir(
 )
 
 install_data(
-  'ags',
+  'astal',
   install_dir: get_option('sysconfdir') / 'pam.d'
 )

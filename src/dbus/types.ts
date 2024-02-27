@@ -71,8 +71,8 @@ export interface StatusNotifierItemProxy extends Gio.DBusProxy {
     ScrollAsync: (delta: number, orientation: string) => Promise<void>;
 }
 
-export interface AgsProxy extends Gio.DBusProxy {
-    new(...args: unknown[]): AgsProxy;
+export interface AstalProxy extends Gio.DBusProxy {
+    new(...args: unknown[]): AstalProxy;
     InspectorRemote: () => void;
     QuitRemote: () => void;
     ToggleWindowSync: (name: string) => boolean;
@@ -82,13 +82,6 @@ export interface AgsProxy extends Gio.DBusProxy {
         objPath?: string,
     ) => void;
     RunJsRemote: (
-        js: string,
-        busName?: string,
-        objPath?: string,
-    ) => void;
-
-    // FIXME: deprecated
-    RunPromiseRemote: (
         js: string,
         busName?: string,
         objPath?: string,

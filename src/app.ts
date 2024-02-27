@@ -1,36 +1,25 @@
-import Gtk from 'gi://Gtk?version=3.0';
-import Gdk from 'gi://Gdk?version=3.0';
+import Gtk from 'gi://Gtk?version=4.0';
+import Gdk from 'gi://Gdk?version=4.0';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import Service from './service.js';
-import Variable from './variable.js';
-import Widget from './widget.js';
-import Utils from './utils.js';
 import { timeout, readFileAsync } from './utils.js';
 import { loadInterfaceXML } from './utils.js';
 
-function deprecated(config: Config) {
-    const warning = (from: string, to: string) => console.warn(
-        `${from} config option has been removed: use ${to} instead`);
+import S from './service.js';
+import V from './variable.js';
+import * as W from './widget.js';
+import * as U from './utils.js';
 
-    if (config.notificationPopupTimeout !== undefined)
-        warning('notificationPopupTimeout', 'Notifications.popupTimeout');
-
-    if (config.notificationForceTimeout !== undefined)
-        warning('notificationForceTimeout', 'Notifications.forceTimeout');
-
-    if (config.cacheNotificationActions !== undefined)
-        warning('cacheNotificationActions', 'Notifications.cacheActions');
-
-    if (config.cacheCoverArt !== undefined)
-        warning('cacheCoverArt', 'Mpris.cacheCoverArt');
-
-    if (config.maxStreamVolume !== undefined)
-        warning('cacheCoverArt', 'Audio.maxStreamVolume');
+declare global {
+    const App: App;
+    const Widget: typeof W;
+    const Service: typeof S;
+    const Variable: typeof V;
+    const Utils: typeof U;
 }
 
-const AgsIFace = (bus: string) =>
-    loadInterfaceXML('com.github.Aylur.ags')?.replace('@BUS@', bus);
+const AstalIFace = (bus: string) =>
+    loadInterfaceXML(pkg.name)?.replace('@BUS@', bus);
 
 export interface Config {
     windows?: Gtk.Window[] | (() => Gtk.Window[])
@@ -43,18 +32,11 @@ export interface Config {
 
     onWindowToggled?: (windowName: string, visible: boolean) => void
     onConfigParsed?: (app: App) => void
-
-    // FIXME: deprecated
-    notificationPopupTimeout?: number
-    notificationForceTimeout?: boolean
-    cacheNotificationActions?: boolean
-    cacheCoverArt?: boolean
-    maxStreamVolume?: number
 }
 
 export class App extends Gtk.Application {
     static {
-        Service.register(this, {
+        S.register(this, {
             'window-toggled': ['string', 'boolean'],
             'config-parsed': [],
         });
@@ -75,57 +57,48 @@ export class App extends Gtk.Application {
     get configPath() { return this._configPath; }
     get configDir() { return this._configDir; }
 
-    set iconTheme(name: string) { Gtk.Settings.get_default()!.gtk_icon_theme_name = name; }
-    get iconTheme() { return Gtk.Settings.get_default()!.gtk_icon_theme_name || ''; }
+    set iconTheme(name: string) { Gtk.Settings.get_default()!.gtkIconThemeName = name; }
+    get iconTheme() { return Gtk.Settings.get_default()!.gtkIconThemeName || ''; }
 
-    set cursorTheme(name: string) { Gtk.Settings.get_default()!.gtk_cursor_theme_name = name; }
-    get cursorTheme() { return Gtk.Settings.get_default()!.gtk_cursor_theme_name || ''; }
+    set cursorTheme(name: string) { Gtk.Settings.get_default()!.gtkCursorThemeName = name; }
+    get cursorTheme() { return Gtk.Settings.get_default()!.gtkCursorThemeName || ''; }
 
-    set gtkTheme(name: string) { Gtk.Settings.get_default()!.gtk_theme_name = name; }
-    get gtkTheme() { return Gtk.Settings.get_default()!.gtk_theme_name || ''; }
+    set gtkTheme(name: string) { Gtk.Settings.get_default()!.gtkThemeName = name; }
+    get gtkTheme() { return Gtk.Settings.get_default()!.gtkThemeName || ''; }
 
     readonly resetCss = () => {
-        const screen = Gdk.Screen.get_default();
-        if (!screen) {
-            console.error("couldn't get screen");
-            return;
-        }
+        const display = Gdk.Display.get_default();
+        if (!display)
+            return console.error("couldn't get display");
 
         this._cssProviders.forEach(provider => {
-            Gtk.StyleContext.remove_provider_for_screen(screen, provider);
+            Gtk.StyleContext.remove_provider_for_display(display, provider);
         });
 
         this._cssProviders = [];
     };
 
     readonly applyCss = (pathOrStyle: string, reset = false) => {
-        const screen = Gdk.Screen.get_default();
-        if (!screen) {
-            console.error("couldn't get screen");
-            return;
-        }
+        const display = Gdk.Display.get_default();
+        if (!display)
+            return console.error("couldn't get display");
 
         if (reset)
             this.resetCss();
 
         const cssProvider = new Gtk.CssProvider();
-        cssProvider.connect('parsing-error', (_, section, err) => {
-            const file = section.get_file().get_path();
-            const location = section.get_start_line();
-            console.error(`CSS ERROR: ${err.message} at line ${location} in ${file}`);
-        });
 
         try {
             if (GLib.file_test(pathOrStyle, GLib.FileTest.EXISTS))
                 cssProvider.load_from_path(pathOrStyle);
             else
-                cssProvider.load_from_data(new TextEncoder().encode(pathOrStyle));
-        } finally {
-            // log on parsing-error
+                cssProvider.load_from_string(pathOrStyle);
+        } catch (err) {
+            logError(err);
         }
 
-        Gtk.StyleContext.add_provider_for_screen(
-            screen,
+        Gtk.StyleContext.add_provider_for_display(
+            display,
             cssProvider,
             Gtk.STYLE_PROVIDER_PRIORITY_USER,
         );
@@ -134,11 +107,15 @@ export class App extends Gtk.Application {
     };
 
     readonly addIcons = (path: string) => {
-        Gtk.IconTheme.get_default().prepend_search_path(path);
+        const display = Gdk.Display.get_default();
+        if (!display)
+            return console.error("couldn't get display");
+
+        Gtk.IconTheme.get_for_display(display).add_search_path(path);
     };
 
     setup(bus: string, path: string, configDir: string, entry: string) {
-        this.application_id = bus;
+        this.applicationId = bus;
         this.flags = Gio.ApplicationFlags.DEFAULT_FLAGS;
         this._objectPath = path;
 
@@ -293,10 +270,7 @@ export class App extends Gtk.Application {
             if (!config)
                 return this.emit('config-parsed');
 
-            // FIXME:
-            deprecated(config);
             this.config(config);
-
             this.emit('config-parsed');
         } catch (err) {
             const error = err as { name?: string, message: string };
@@ -313,11 +287,11 @@ export class App extends Gtk.Application {
     private _register() {
         Gio.bus_own_name(
             Gio.BusType.SESSION,
-            this.application_id!,
+            this.applicationId!,
             Gio.BusNameOwnerFlags.NONE,
             (connection: Gio.DBusConnection) => {
                 this._dbus = Gio.DBusExportedObject
-                    .wrapJSObject(AgsIFace(this.application_id!) as string, this);
+                    .wrapJSObject(AstalIFace(this.applicationId!) as string, this);
 
                 this._dbus.export(connection, this._objectPath);
             },
@@ -328,7 +302,7 @@ export class App extends Gtk.Application {
 
     toJSON() {
         return {
-            bus: this.application_id,
+            bus: this.applicationId,
             configDir: this.configDir,
             windows: Object.fromEntries(this.windows.entries()),
         };
@@ -374,27 +348,6 @@ export class App extends Gtk.Application {
                 this.RunJs(content, bus, path);
             })
             .catch(logError);
-    }
-
-    // FIXME: deprecated
-    RunPromise(js: string, busName?: string, objPath?: string) {
-        console.warn('--run-promise is DEPRECATED, ' +
-            ' use --run-js instead, which now supports await syntax');
-
-        const client = busName && objPath;
-        const response = (out: unknown) => Gio.DBus.session.call(
-            busName!, objPath!, busName!, 'Return',
-            new GLib.Variant('(s)', [`${out}`]),
-            null, Gio.DBusCallFlags.NONE, -1, null, null,
-        );
-
-        new Promise((res, rej) => Function('resolve', 'reject', js)(res, rej))
-            .then(out => {
-                client ? response(`${out}`) : print(`${out}`);
-            })
-            .catch(err => {
-                client ? response(`${err}`) : console.error(`${err}`);
-            });
     }
 
     ToggleWindow(name: string) {

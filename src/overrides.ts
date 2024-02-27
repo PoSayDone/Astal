@@ -1,4 +1,3 @@
-import Gtk from 'gi://Gtk?version=3.0';
 import GObject from 'gi://GObject';
 
 const PROP_FILTER = ['parent', 'window', 'font-options', 'pixels'];
@@ -22,18 +21,3 @@ GObject.Object.prototype.toJSON = function() {
     });
     return result;
 };
-
-Object.defineProperty(Gtk.Bin.prototype, 'child', {
-    get() { return this.get_child(); },
-    set(child) {
-        const prev = this.get_child();
-        if (prev)
-            this.remove(prev);
-
-        if (prev !== child)
-            prev?.destroy();
-
-        this.add(child);
-    },
-});
-
