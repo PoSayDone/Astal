@@ -6,7 +6,7 @@ import app from './app.js';
 import client from './client.js';
 import { isRunning, parsePath, init } from './utils/init.js';
 
-const BIN_NAME = pkg.name.split('.').pop()!;
+const BIN_NAME = 'astal';
 const APP_BUS = (name: string) => `${pkg.name}.${name}`;
 const APP_PATH = (name: string) => `/${pkg.name.split('.').join('/')}/${name}`;
 const DEFAULT_CONF = `${GLib.get_user_config_dir()}/${BIN_NAME}/config.js`;
