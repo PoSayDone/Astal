@@ -35,8 +35,10 @@ export function bulkDisconnect(service: GObject.Object, ids: number[]) {
 
 export function lookUpIcon(name: string) {
     const display = Gdk.Display.get_default();
-    if (!display)
-        return console.error("couldn't get display");
+    if (!display) {
+        console.error("couldn't get display");
+        return null;
+    }
 
     return Gtk.IconTheme.get_for_display(display).has_icon(name)
         ? name : null;

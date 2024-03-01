@@ -1,7 +1,6 @@
 import { register, type BaseProps, type Widget } from './widget.js';
 import Gtk from 'gi://Gtk?version=4.0';
 import Gdk from 'gi://Gdk?version=4.0';
-import { Binding } from '../service.js';
 // @ts-expect-error missing types FIXME:
 import { default as LayerShell } from 'gi://Gtk4LayerShell';
 
@@ -46,8 +45,11 @@ export type WindowProps<
     keymode?: Keymode
 }, Attr>
 
-export function newWindow<Child extends Gtk.Widget, Attr>(props: WindowProps<Child, Attr>) {
-    return new Window(props);
+export function newWindow<
+    Child extends Gtk.Widget = Gtk.Widget,
+    Attr = unknown
+>(...props: ConstructorParameters<typeof Window<Child, Attr>>) {
+    return new Window(...props);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -99,8 +101,6 @@ export class Window<Child extends Gtk.Widget, Attr> extends Gtk.Window {
         this._handleParamProp('monitor', monitor);
         this._handleParamProp('gdkmonitor', gdkmonitor);
         this._handleParamProp('keymode', keymode);
-
-        this.present();
         this._handleParamProp('visible', visible);
     }
 
@@ -254,5 +254,3 @@ export class Window<Child extends Gtk.Widget, Attr> extends Gtk.Window {
         this.notify('keymode');
     }
 }
-
-export default Window;
