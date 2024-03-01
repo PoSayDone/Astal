@@ -40,10 +40,12 @@ const Bar = (/** @type {number} */ monitor) => Widget.Window({
     child: Widget.CenterBox({
         startWidget: Widget.Label({
             hpack: 'center',
+            hexpand: true,
             label: 'Welcome to Astal!',
         }),
         endWidget: Widget.Label({
             hpack: 'center',
+            hexpand: true,
             label: time.bind(),
         }),
     }),
