@@ -2,6 +2,8 @@ import { register, type BaseProps, type Widget } from './widget.js';
 import Gtk from 'gi://Gtk?version=4.0';
 import Gdk from 'gi://Gdk?version=4.0';
 
+type Event<Self> = (self: Self) => void | unknown
+
 const POSITION = {
     'left': Gtk.PositionType.LEFT,
     'right': Gtk.PositionType.RIGHT,
@@ -17,7 +19,7 @@ export type PopoverProps<
     Self = Popover<Child, Attr>,
 > = BaseProps<Self, Gtk.Popover.ConstructorProperties & {
     child?: Child
-    on_closed?: (self: Self) => boolean
+    on_closed?: Event<Self>
     xoffset?: number
     yoffset?: number
     popover_position?: Position
@@ -63,7 +65,7 @@ export class Popover<Child extends Gtk.Widget, Attr> extends Gtk.Popover {
     set child(child: Child) { super.child = child; }
 
     get on_closed() { return this._get('on-closed') || (() => false); }
-    set on_closed(callback: (self: this) => void) { this._set('on-closed', callback); }
+    set on_closed(callback: Event<this>) { this._set('on-closed', callback); }
 
     get yoffset() { return this.get_offset()[1]; }
     set yoffset(y: number) { this.set_offset(this.xoffset, y); }

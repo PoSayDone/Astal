@@ -4,6 +4,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import { timeout, readFileAsync } from './utils.js';
 import { loadInterfaceXML } from './utils.js';
+import { registerGObject } from './utils.js';
 
 import S from './service.js';
 import V from './variable.js';
@@ -36,9 +37,12 @@ export interface Config {
 
 export class App extends Gtk.Application {
     static {
-        S.register(this, {
-            'window-toggled': ['string', 'boolean'],
-            'config-parsed': [],
+        registerGObject(this, {
+            typename: 'Astal',
+            signals: {
+                'window-toggled': ['string', 'boolean'],
+                'config-parsed': [],
+            },
         });
     }
 

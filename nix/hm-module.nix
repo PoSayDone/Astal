@@ -58,7 +58,7 @@ in {
       xdg.configFile."astal".source = cfg.configDir;
     })
     (mkIf (cfg.package != null) (let
-      path = "share/astal/types";
+      path = "share/io.Aylur.Astal/types";
       pkg = cfg.package.override {
         extraPackages = cfg.extraPackages;
         buildTypes = true;

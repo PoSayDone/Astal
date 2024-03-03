@@ -13,14 +13,6 @@ const ALIGN = {
 
 type Align = keyof typeof ALIGN;
 
-// type Keys = {
-//     [K in keyof typeof Gdk as K extends `KEY_${infer U}` ? U : never]: number;
-// };
-//
-// type ModifierKey = {
-//     [K in keyof typeof Gdk.ModifierType as K extends `${infer M}_MASK` ? M : never]: number
-// }
-
 type Cursor =
     | 'default'
     | 'help'
@@ -67,31 +59,31 @@ interface CommonProps<Attr> {
 
 /* eslint-disable max-len */
 interface EventHandlers<Self> {
-    on_focus_enter: (self: Self, controller: Gtk.EventControllerFocus) => boolean | undefined,
-    on_focus_leave: (self: Self, controller: Gtk.EventControllerFocus) => boolean | undefined,
-    on_key_pressed: (self: Self, key: { val: number, code: number, mod: Gdk.ModifierType }, controller: Gtk.EventControllerKey) => boolean | undefined,
-    on_key_released: (self: Self, key: { val: number, code: number, mod: Gdk.ModifierType }, controller: Gtk.EventControllerKey) => boolean | undefined,
-    on_key_modifier: (self: Self, mod: Gdk.ModifierType, controller: Gtk.EventControllerKey) => boolean | undefined,
-    on_legacy: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | undefined,
-    on_click: (self: Self, event: { button: number, mod: Gdk.ModifierType, event: Gdk.Event }, controller: Gtk.EventControllerLegacy) => boolean | undefined,
-    on_click_release: (self: Self, event: { button: number, mod: Gdk.ModifierType, event: Gdk.Event }, controller: Gtk.EventControllerLegacy) => boolean | undefined,
-    on_primary_click: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | undefined,
-    on_primary_click_release: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | undefined,
-    on_middle_click: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | undefined,
-    on_middle_click_release: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | undefined,
-    on_secondary_click: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | undefined,
-    on_secondary_click_release: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | undefined,
-    on_motion: (self: Self, positon: { x: number, y: number }, controller: Gtk.EventControllerMotion) => boolean | undefined,
-    on_hover_leave: (self: Self, controller: Gtk.EventControllerMotion) => boolean | undefined,
-    on_hover_enter: (self: Self, positon: { x: number, y: number }, controller: Gtk.EventControllerMotion) => boolean | undefined,
-    on_scroll: (self: Self, delta: { x: number, y: number }, controller: Gtk.EventControllerScroll) => boolean | undefined,
-    on_scroll_begin: (self: Self, controller: Gtk.EventControllerScroll) => boolean | undefined,
-    on_scroll_end: (self: Self, controller: Gtk.EventControllerScroll) => boolean | undefined,
-    on_scroll_up: (self: Self, delta: { x: number, y: number }, controller: Gtk.EventControllerScroll) => boolean | undefined,
-    on_scroll_down: (self: Self, delta: { x: number, y: number }, controller: Gtk.EventControllerScroll) => boolean | undefined,
-    on_scroll_right: (self: Self, delta: { x: number, y: number }, controller: Gtk.EventControllerScroll) => boolean | undefined,
-    on_scroll_left: (self: Self, delta: { x: number, y: number }, controller: Gtk.EventControllerScroll) => boolean | undefined,
-    on_scroll_decelerate: (self: Self, velocity: { x: number, y: number }, controller: Gtk.EventControllerScroll) => boolean | undefined,
+    on_focus_enter: (self: Self, controller: Gtk.EventControllerFocus) => boolean | unknown,
+    on_focus_leave: (self: Self, controller: Gtk.EventControllerFocus) => boolean | unknown,
+    on_key_pressed: (self: Self, key: { val: number, code: number, mod: Gdk.ModifierType }, controller: Gtk.EventControllerKey) => boolean | unknown,
+    on_key_released: (self: Self, key: { val: number, code: number, mod: Gdk.ModifierType }, controller: Gtk.EventControllerKey) => boolean | unknown,
+    on_key_modifier: (self: Self, mod: Gdk.ModifierType, controller: Gtk.EventControllerKey) => boolean | unknown,
+    on_legacy: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | unknown,
+    on_click: (self: Self, event: { button: number, mod: Gdk.ModifierType, event: Gdk.Event }, controller: Gtk.EventControllerLegacy) => boolean | unknown,
+    on_click_release: (self: Self, event: { button: number, mod: Gdk.ModifierType, event: Gdk.Event }, controller: Gtk.EventControllerLegacy) => boolean | unknown,
+    on_primary_click: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | unknown,
+    on_primary_click_release: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | unknown,
+    on_middle_click: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | unknown,
+    on_middle_click_release: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | unknown,
+    on_secondary_click: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | unknown,
+    on_secondary_click_release: (self: Self, event: Gdk.Event, controller: Gtk.EventControllerLegacy) => boolean | unknown,
+    on_motion: (self: Self, positon: { x: number, y: number }, controller: Gtk.EventControllerMotion) => boolean | unknown,
+    on_hover_leave: (self: Self, controller: Gtk.EventControllerMotion) => boolean | unknown,
+    on_hover_enter: (self: Self, positon: { x: number, y: number }, controller: Gtk.EventControllerMotion) => boolean | unknown,
+    on_scroll: (self: Self, delta: { x: number, y: number }, controller: Gtk.EventControllerScroll) => boolean | unknown,
+    on_scroll_begin: (self: Self, controller: Gtk.EventControllerScroll) => boolean | unknown,
+    on_scroll_end: (self: Self, controller: Gtk.EventControllerScroll) => boolean | unknown,
+    on_scroll_up: (self: Self, delta: { x: number, y: number }, controller: Gtk.EventControllerScroll) => boolean | unknown,
+    on_scroll_down: (self: Self, delta: { x: number, y: number }, controller: Gtk.EventControllerScroll) => boolean | unknown,
+    on_scroll_right: (self: Self, delta: { x: number, y: number }, controller: Gtk.EventControllerScroll) => boolean | unknown,
+    on_scroll_left: (self: Self, delta: { x: number, y: number }, controller: Gtk.EventControllerScroll) => boolean | unknown,
+    on_scroll_decelerate: (self: Self, velocity: { x: number, y: number }, controller: Gtk.EventControllerScroll) => boolean | unknown,
 }
 
 type Optional<T> = { [K in keyof T]?: T[K] };
@@ -192,11 +184,7 @@ export class AstalWidget<Attr> extends Gtk.Widget implements Widget<Attr> {
             this._set('attribute', attribute);
 
         (binds as unknown as Array<[keyof Props<this>, Binding<any, any, any>]>)
-            .forEach(([selfProp, { emitter, prop, transformFn }]) => {
-                this.hook(emitter, () => {
-                    this[selfProp] = transformFn(emitter[prop]);
-                }, `notify::${kebabify(prop)}`);
-            });
+            .forEach(([prop, binding]) => this._handleParamProp(prop, binding));
 
         this.connect('destroy', () => this._set('is-destroyed', true));
         setup?.(this);
@@ -291,8 +279,6 @@ export class AstalWidget<Attr> extends Gtk.Widget implements Widget<Attr> {
     get cursor_name() { return this.cursor.name as Cursor; }
     set cursor_name(cursor: Cursor) { this.cursor = new Gdk.Cursor({ name: cursor }); }
 
-    // TODO: click_through
-
     _focusController() {
         if (this._get('focus-controller'))
             return this._get<Gtk.EventControllerFocus>('focus-controller');
@@ -369,7 +355,7 @@ export class AstalWidget<Attr> extends Gtk.Widget implements Widget<Attr> {
             const btnPress = e.get_event_type() === Gdk.EventType.BUTTON_PRESS;
             const btnRelease = e.get_event_type() === Gdk.EventType.BUTTON_RELEASE;
             const mod = e.get_modifier_state();
-            let handled: boolean | undefined = false;
+            let handled: unknown = false;
 
             handled ||= this.on_legacy(this, e, controller);
 
@@ -506,7 +492,7 @@ export class AstalWidget<Attr> extends Gtk.Widget implements Widget<Attr> {
         this._set('scroll-controller', controller, false);
         controller.set_flags(Gtk.EventControllerScrollFlags.BOTH_AXES);
         controller.connect('scroll', (_, x, y) => {
-            let handled: boolean | undefined = false;
+            let handled: unknown = false;
 
             handled ||= this.on_scroll(this, { x, y }, controller);
 

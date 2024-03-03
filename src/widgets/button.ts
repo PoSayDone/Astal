@@ -1,13 +1,15 @@
 import { register, type BaseProps, type Widget } from './widget.js';
 import Gtk from 'gi://Gtk?version=4.0';
 
+type Event<Self> = (self: Self) => unknown
+
 export type ButtonProps<
     Child extends Gtk.Widget = Gtk.Widget,
     Attr = unknown,
     Self = Button<Child, Attr>,
 > = BaseProps<Self, Gtk.Button.ConstructorProperties & {
     child?: Child
-    on_clicked?: (self: Self) => boolean
+    on_clicked?: Event<Self>
 }, Attr>;
 
 export function newButton<
@@ -40,5 +42,5 @@ export class Button<Child extends Gtk.Widget, Attr> extends Gtk.Button {
     set child(child: Child) { super.child = child; }
 
     get on_clicked() { return this._get('on-clicked') || (() => false); }
-    set on_clicked(callback: (self: this) => void) { this._set('on-clicked', callback); }
+    set on_clicked(callback: Event<this>) { this._set('on-clicked', callback); }
 }

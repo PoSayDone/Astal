@@ -1,6 +1,7 @@
 import { register, type BaseProps, type Widget } from './widget.js';
 import Gtk from 'gi://Gtk?version=4.0';
 import Gdk from 'gi://Gdk?version=4.0';
+import Cairo from 'gi://cairo?version=1.0';
 // @ts-expect-error missing types FIXME:
 import { default as LayerShell } from 'gi://Gtk4LayerShell';
 
@@ -43,6 +44,7 @@ export type WindowProps<
     gdkmonitor?: Gdk.Monitor
     visible?: boolean
     keymode?: Keymode
+    transparent?: boolean
 }, Attr>
 
 export function newWindow<
@@ -68,6 +70,7 @@ export class Window<Child extends Gtk.Widget, Attr> extends Gtk.Window {
                 'gdkmonitor': ['jsobject', 'rw'],
                 'popup': ['boolean', 'rw'],
                 'keymode': ['string', 'rw'],
+                'transparent': ['boolean', 'r'],
             },
         });
     }
@@ -84,6 +87,7 @@ export class Window<Child extends Gtk.Widget, Attr> extends Gtk.Window {
         monitor = -1,
         gdkmonitor,
         visible = true,
+        transparent = false,
         ...params
     }: WindowProps<Child, Attr> = {}, child?: Child) {
         if (child)
@@ -102,7 +106,12 @@ export class Window<Child extends Gtk.Widget, Attr> extends Gtk.Window {
         this._handleParamProp('gdkmonitor', gdkmonitor);
         this._handleParamProp('keymode', keymode);
         this._handleParamProp('visible', visible);
+
+        if (transparent)
+            Utils.idle(() => this.get_surface().set_input_region(new Cairo.Region));
     }
+
+    get transparent() { return !!this._get('transparent'); }
 
     get child() { return super.child as Child; }
     set child(child: Child) { super.child = child; }

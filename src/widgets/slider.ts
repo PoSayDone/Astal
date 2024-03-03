@@ -149,13 +149,7 @@ export class Slider<Attr> extends Gtk.Scale {
     }
 
     get vertical() { return this.orientation === Gtk.Orientation.VERTICAL; }
-    set vertical(vertical) {
-        if (this.vertical === vertical)
-            return;
-
-        this.orientation = vertical
-            ? Gtk.Orientation.VERTICAL : Gtk.Orientation.HORIZONTAL;
-
-        this.notify('vertical');
+    set vertical(v: boolean) {
+        this.orientation = Gtk.Orientation[v ? 'VERTICAL' : 'HORIZONTAL'];
     }
 }

@@ -26,6 +26,7 @@ export class Box<Child extends Gtk.Widget, Attr> extends Gtk.Box {
             properties: {
                 'vertical': ['boolean', 'rw'],
                 'children': ['jsobject', 'rw'],
+                'child': ['jsobject', 'rw'],
             },
         });
     }
@@ -47,7 +48,7 @@ export class Box<Child extends Gtk.Widget, Attr> extends Gtk.Box {
     get child() { return this.children[0] as Child; }
     set child(child: Child) { this.children = [child]; }
 
-    get children() {
+    get children(): Child[] {
         const children = [];
         let widget = this.get_first_child();
         while (widget) {

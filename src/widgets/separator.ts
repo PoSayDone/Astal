@@ -8,8 +8,10 @@ export type SeparatorProps<
     vertical?: boolean
 }, Attr>;
 
-export function newSeparator<Attr = unknown>(props?: SeparatorProps<Attr>) {
-    return new Separator(props);
+export function newSeparator<
+    Attr = unknown
+>(...props: ConstructorParameters<typeof Separator<Attr>>) {
+    return new Separator(...props);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -28,10 +30,7 @@ export class Separator<Attr> extends Gtk.Separator {
         this.connect('notify::orientation', () => this.notify('vertical'));
     }
 
-    get vertical() {
-        return this.orientation === Gtk.Orientation.VERTICAL;
-    }
-
+    get vertical() { return this.orientation === Gtk.Orientation.VERTICAL; }
     set vertical(v: boolean) {
         this.orientation = Gtk.Orientation[v ? 'VERTICAL' : 'HORIZONTAL'];
     }

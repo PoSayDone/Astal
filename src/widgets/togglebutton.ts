@@ -1,13 +1,15 @@
 import { register, type BaseProps, type Widget } from './widget.js';
 import Gtk from 'gi://Gtk?version=4.0';
 
+type Event<Self> = (self: Self) => boolean | unknown
+
 export type ToggleButtonProps<
     Child extends Gtk.Widget = Gtk.Widget,
     Attr = unknown,
     Self = ToggleButton<Child, Attr>,
 > = BaseProps<Self, Gtk.ToggleButton.ConstructorProperties & {
     child?: Child
-    on_toggled?: (self: Self) => boolean
+    on_toggled?: Event<Self>
 }, Attr>;
 
 export function newToggleButton<
@@ -40,5 +42,5 @@ export class ToggleButton<Child extends Gtk.Widget, Attr> extends Gtk.ToggleButt
     set child(child: Child) { super.child = child; }
 
     get on_toggled() { return this._get('on-toggled') || (() => false); }
-    set on_toggled(callback: (self: this) => void) { this._set('on-toggled', callback); }
+    set on_toggled(callback: Event<this>) { this._set('on-toggled', callback); }
 }
