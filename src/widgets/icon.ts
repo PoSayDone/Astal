@@ -24,15 +24,14 @@ export class Icon<Attr> extends Gtk.Image {
     static {
         register(this, {
             properties: {
-                'icon': ['jsobject', 'rw'],
+                'icon': ['string', 'rw'],
             },
         });
     }
 
     constructor(props: IconProps<Attr> | Ico = {}) {
-        super(typeof props === 'object' ? props as Gtk.Image.ConstructorProperties : {});
-        if (typeof props !== 'object')
-            this._handleParamProp('icon', props);
+        const p = typeof props === 'string' ? { icon: props } : props;
+        super(p as Gtk.Image.ConstructorProperties);
     }
 
     get icon(): Ico { return this._get('icon') || ''; }
