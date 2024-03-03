@@ -17,7 +17,7 @@ dependency('glib-2.0')
 dependency('gobject-introspection-1.0', version: '>= 1.49.1')
 dependency('gio-2.0', version: '>= 2.56.0')
 dependency('gjs-1.0', version: '>= 1.73.1')
-dependency('gtk+-3.0', version: '>= 3.0')
+dependency('gtk4', version: '>= 4.12')
 
 subproject('gvc',
   default_options: [
