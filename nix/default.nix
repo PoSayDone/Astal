@@ -96,6 +96,8 @@ in
       pam
     ] ++ extraPackages;
 
+    outputs = [ "out" "lib" ];
+
     meta = with lib; {
       description = "JavaScript/TypeScript framework for creating Linux Desktops";
       homepage = "https://github.com/Aylur/Astal";
