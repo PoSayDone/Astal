@@ -4,6 +4,7 @@
 , fetchFromGitLab
 , nodePackages
 , meson
+, makeWrapper
 , pkg-config
 , ninja
 , gobject-introspection
@@ -20,7 +21,6 @@
 , libsoup_3
 , libnotify
 , pam
-, writeShellScriptBin
 , extraPackages ? [ ]
 , version ? "git"
 , buildTypes ? false
@@ -33,8 +33,8 @@ let
     rev = "8e7a5a4c3e51007ce6579292642517e3d3eb9c50";
     sha256 = "sha256-FosJwgTCp6/EI6WVbJhPisokRBA6oT0eo7d+Ya7fFX8=";
   };
-
-  astal = stdenv.mkDerivation rec {
+in
+  stdenv.mkDerivation rec {
     pname = "astal";
     inherit version;
 
@@ -66,6 +66,11 @@ let
       patchShebangs post_install.sh
     '';
 
+    postInstall = ''
+      wrapProgram $out/bin/astal \
+        --prefix LD_PRELOAD : ${gtk4-layer-shell}/lib/libgtk4-layer-shell.so
+    '';
+
     nativeBuildInputs = [
       pkg-config
       meson
@@ -73,6 +78,7 @@ let
       nodePackages.typescript
       wrapGAppsHook
       gobject-introspection
+      makeWrapper
     ];
 
     buildInputs = [
@@ -90,6 +96,8 @@ let
       pam
     ] ++ extraPackages;
 
+    outputs = [ "out" "lib" ];
+
     meta = with lib; {
       description = "JavaScript/TypeScript framework for creating Linux Desktops";
       homepage = "https://github.com/Aylur/Astal";
@@ -97,7 +105,4 @@ let
       license = licenses.gpl3;
       meta.maintainers = [ lib.maintainers.Aylur ];
     };
-  };
-in writeShellScriptBin "astal" ''
-  LD_PRELOAD=${gtk4-layer-shell}/lib/libgtk4-layer-shell.so ${astal}/bin/astal $@
-''
+  }
