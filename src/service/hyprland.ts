@@ -3,10 +3,9 @@ import Gio from 'gi://Gio';
 import Service from '../service.js';
 
 Gio._promisify(Gio.DataInputStream.prototype, 'read_upto_async');
-const HIS = GLib.getenv('HYPRLAND_INSTANCE_SIGNATURE');
 
-const socket = (path: string) => new Gio.SocketClient()
-    .connect(new Gio.UnixSocketAddress({ path }), null);
+const HIS = GLib.getenv('HYPRLAND_INSTANCE_SIGNATURE');
+const XDG_RUNTIME_DIR = GLib.getenv('XDG_RUNTIME_DIR') || '/';
 
 export class ActiveClient extends Service {
     static {
@@ -136,17 +135,24 @@ export class Hyprland extends Service {
         for (const c of JSON.parse(this.message('j/clients')) as Client[])
             this._clients.set(c.address, c);
 
-
-        // this._syncWorkspaces();
-        // this._syncClients();
-
         this._watchSocket(new Gio.DataInputStream({
-            closeBaseStream: true,
-            baseStream: socket(`/tmp/hypr/${HIS}/.socket2.sock`)
+            close_base_stream: true,
+            base_stream: this._connection('socket2')
                 .get_input_stream(),
         }));
 
         this._active.connect('changed', () => this.changed('active'));
+    }
+
+    private _connection(socket: 'socket' | 'socket2') {
+        const sock = (pre: string) => `${pre}/hypr/${HIS}/.${socket}.sock`;
+
+        const path = GLib.file_test(sock(XDG_RUNTIME_DIR), GLib.FileTest.EXISTS)
+            ? sock(XDG_RUNTIME_DIR)
+            : sock('/tmp');
+
+        return new Gio.SocketClient()
+            .connect(new Gio.UnixSocketAddress({ path }), null);
     }
 
     private _watchSocket(stream: Gio.DataInputStream) {
@@ -160,16 +166,23 @@ export class Hyprland extends Service {
         });
     }
 
+    // FIXME: deprecated
+    readonly sendMessage = (cmd: string) => {
+        console.warn('hyprland.sendMessage is DEPRECATED, '
+            + ' use hyprland.message or hyprland.messageAsync');
+        return this.messageAsync(cmd);
+    };
+
     private _socketStream(cmd: string) {
-        const connection = socket(`/tmp/hypr/${HIS}/.socket.sock`);
+        const connection = this._connection('socket');
 
         connection
             .get_output_stream()
             .write(this._encoder.encode(cmd), null);
 
         const stream = new Gio.DataInputStream({
-            closeBaseStream: true,
-            baseStream: connection.get_input_stream(),
+            close_base_stream: true,
+            base_stream: connection.get_input_stream(),
         });
 
         return [connection, stream] as const;
@@ -188,7 +201,6 @@ export class Hyprland extends Service {
         return '';
     };
 
-    // eslint-disable-next-line space-before-function-paren
     readonly messageAsync = async (cmd: string) => {
         const [connection, stream] = this._socketStream(cmd);
         try {
