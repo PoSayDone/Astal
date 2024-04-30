@@ -137,7 +137,7 @@ export class Hyprland extends Service {
 
         this._watchSocket(new Gio.DataInputStream({
             closeBaseStream: true,
-            base_stream: this._connection('socket2')
+            baseStream: this._connection('socket2')
                 .get_input_stream(),
         }));
 
@@ -182,7 +182,7 @@ export class Hyprland extends Service {
 
         const stream = new Gio.DataInputStream({
             closeBaseStream: true,
-            base_stream: connection.get_input_stream(),
+            baseStream: connection.get_input_stream(),
         });
 
         return [connection, stream] as const;
